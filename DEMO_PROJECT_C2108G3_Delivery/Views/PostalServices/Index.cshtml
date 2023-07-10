@@ -1,0 +1,68 @@
+﻿
+@{
+    ViewData["Title"] = "View";
+    Layout = "~/Views/Shared/_LayoutAdmin.cshtml";
+}
+
+<table id="myDataTable" class="table table-bordered table-hover dataTable dtr-inline" >
+    <thead>
+        <tr>
+            <th>Id</th>
+            <th>City</th>
+            <th>State</th>
+            <th>Country</th>
+            <th>Location</th>
+            <th>Action</th>
+        </tr>
+    </thead>
+</table>
+
+@section scripts{
+    <script>
+        var TRACKING = {
+            Init: function(){
+                TRACKING.RegisterEvenet();
+                TRACKING.LoadDataTable();
+            },
+            RegisterEvenet: function(){
+
+            },
+            LoadDataTable: function(){
+                $('#myDataTable').DataTable({
+                    processing: true,
+                    serverSide: true,
+                    ajax: {
+                        url: '/PostalServices/Filter',
+                        type: 'GET',
+                    },
+                    columns: [
+                        { data: 'id', name: 'Id' },
+                        { data: 'city', name: 'City' },
+                        { data: 'state', name: 'State' },
+                        { data: 'country', name: 'Country' },
+                        {
+                            data: null,
+                            render: function (data, type, row) {
+                                return row.latitude + "<br>" + row.longtitude;
+                            }
+                        },
+                        {
+                            data: null,
+                            render: function (data, type, row) {
+                                var updateLink = '<a href="/PostalServices/Update/' + row.id + '">Update</a>';
+                                var deleteLink = '<a href="/PostalServices/Delete/' + row.id + '">Delete</a>';
+                                return updateLink + " | " + deleteLink;
+                            }
+                        }
+                    ],
+                    createdRow: function (row, data, dataIndex) {
+                        $(row).attr('data-id', data.id);
+                    }
+                });
+
+            }
+
+        }
+        TRACKING.Init();
+    </script>
+}
